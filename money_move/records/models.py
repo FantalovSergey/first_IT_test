@@ -1,8 +1,5 @@
 from django.core.validators import MinValueValidator
 from django.db import models
-from inflect import engine
-
-inflect_engine = engine()
 
 
 class Directory(models.Model):
@@ -17,7 +14,6 @@ class Directory(models.Model):
             'к удалению всех записей о ДДС, включающих данное наименование. '
             'Внесите необходимые корректировки до удаления.'
         )
-        default_related_name = inflect_engine.plural('%(class)s')
         ordering = ('name',)
 
     def __str__(self):
@@ -73,6 +69,12 @@ class Record(models.Model):
     status = models.ForeignKey(
         Status, on_delete=models.CASCADE, verbose_name='Статус',
     )
+    type = models.ForeignKey(
+        Type, on_delete=models.CASCADE, verbose_name='Тип',
+    )
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, verbose_name='Категория',
+    )
     subcategory = models.ForeignKey(
         Subcategory, on_delete=models.CASCADE, verbose_name='Подкатегория',
     )
@@ -84,6 +86,10 @@ class Record(models.Model):
     comment = models.TextField(blank=True, null=True)
 
     class Meta:
+        db_table_comment = (
+            'Полужирным шрифтом отмечены поля, обязательные для заполнения, '
+            'обычным шрифтом – необязательные.'
+        )
         default_related_name = 'records'
         ordering = ('-created_at',)
         verbose_name = 'Запись'
