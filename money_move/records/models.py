@@ -70,20 +70,31 @@ class Record(models.Model):
         Status, on_delete=models.CASCADE, verbose_name='Статус',
     )
     type = models.ForeignKey(
-        Type, on_delete=models.CASCADE, verbose_name='Тип',
+        Type,
+        on_delete=models.CASCADE,
+        verbose_name='Тип',
+        help_text='Добавляется автоматически согласно выбранной подкатегории',
     )
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, verbose_name='Категория',
+        Category,
+        on_delete=models.CASCADE,
+        verbose_name='Категория',
+        help_text='Добавляется автоматически согласно выбранной подкатегории',
     )
     subcategory = models.ForeignKey(
-        Subcategory, on_delete=models.CASCADE, verbose_name='Подкатегория',
+        Subcategory,
+        on_delete=models.CASCADE,
+        verbose_name='Подкатегория',
+        help_text='Доступен поиск по подкатегориям, категориям и типам',
     )
     amount = models.PositiveBigIntegerField(
         verbose_name='Сумма',
         validators=[MinValueValidator(1)],
         help_text='Количество средств в рублях',
     )
-    comment = models.TextField(blank=True, null=True)
+    comment = models.TextField(
+        verbose_name='Комментарий', blank=True, null=True,
+    )
 
     class Meta:
         db_table_comment = (
