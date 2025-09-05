@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils.timezone import now
 
 
 class Directory(models.Model):
@@ -9,11 +10,6 @@ class Directory(models.Model):
 
     class Meta:
         abstract = True
-        db_table_comment = (
-            'Будьте внимательны! Удаление наименования приведёт '
-            'к удалению всех записей о ДДС, включающих данное наименование. '
-            'Внесите необходимые корректировки до удаления.'
-        )
         ordering = ('name',)
 
     def __str__(self):
@@ -23,14 +19,14 @@ class Directory(models.Model):
 class Status(Directory):
 
     class Meta(Directory.Meta):
-        verbose_name = 'Статус'
+        verbose_name = 'статус'
         verbose_name_plural = 'Статусы'
 
 
 class Type(Directory):
 
     class Meta(Directory.Meta):
-        verbose_name = 'Тип'
+        verbose_name = 'тип'
         verbose_name_plural = 'Типы'
 
 
@@ -40,12 +36,8 @@ class Category(Directory):
     )
 
     class Meta(Directory.Meta):
-        ordering = ('type', 'name')
-        verbose_name = 'Категория'
+        verbose_name = 'категория'
         verbose_name_plural = 'Категории'
-
-    def __str__(self):
-        return f'{self.type}, {self.name}'
 
 
 class Subcategory(Directory):
@@ -54,62 +46,41 @@ class Subcategory(Directory):
     )
 
     class Meta(Directory.Meta):
-        ordering = ('category', 'name')
-        verbose_name = 'Подкатегория'
+        verbose_name = 'подкатегория'
         verbose_name_plural = 'Подкатегории'
-
-    def __str__(self):
-        return f'{self.category}, {self.name}'
 
 
 class Record(models.Model):
     created_at = models.DateField(
-        verbose_name='Дата создания записи', auto_now_add=True,
+        verbose_name='Дата создания записи', blank=True, default=now,
     )
     status = models.ForeignKey(
         Status, on_delete=models.CASCADE, verbose_name='Статус',
-    )
-    type = models.ForeignKey(
-        Type,
-        on_delete=models.CASCADE,
-        verbose_name='Тип',
-        help_text='Добавляется автоматически согласно выбранной подкатегории',
-    )
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        verbose_name='Категория',
-        help_text='Добавляется автоматически согласно выбранной подкатегории',
     )
     subcategory = models.ForeignKey(
         Subcategory,
         on_delete=models.CASCADE,
         verbose_name='Подкатегория',
-        help_text='Доступен поиск по подкатегориям, категориям и типам',
+        help_text='Доступен поиск по подкатегориям, категориям и типам.',
     )
     amount = models.PositiveBigIntegerField(
         verbose_name='Сумма',
         validators=[MinValueValidator(1)],
-        help_text='Количество средств в рублях',
+        help_text='Количество средств в рублях.',
     )
     comment = models.TextField(
         verbose_name='Комментарий', blank=True, null=True,
     )
 
     class Meta:
-        db_table_comment = (
-            'Полужирным шрифтом отмечены поля, обязательные для заполнения, '
-            'обычным шрифтом – необязательные.'
-        )
-        default_related_name = 'records'
         ordering = ('-created_at',)
-        verbose_name = 'Запись'
+        verbose_name = 'запись'
         verbose_name_plural = 'Записи'
 
     def __str__(self):
         return (
             (
                 f'{self.created_at}, {self.status}, '
-                f'{self.subcategory.name}, {self.amount}'
+                f'{self.subcategory.name}, {self.amount} ₽'
             ) + (', нажмите для просмотра комментария' if self.comment else '')
         )

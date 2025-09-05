@@ -1,5 +1,7 @@
 asgiref==3.9.1
 Django==5.2.5
+django-admin-rangefilter==0.13.3
+django-more-admin-filters==1.13
 dotenv==0.9.9
 more-itertools==10.8.0
 python-dotenv==1.1.1
