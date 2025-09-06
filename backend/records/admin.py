@@ -8,6 +8,16 @@ from .models import Category, Record, Status, Subcategory, Type
 
 @admin.register(Record)
 class RecordAdmin(admin.ModelAdmin):
+    """Класс, описывающий возможности для управления записями о движении
+    денежных средств.
+
+    Поля 'тип' и 'категория' доступны только для чтения и определяются исходя
+    из выбранной подкатегории, причём при выборе подкатегории доступен поиск
+    по типу, категории и подкатегории. Поиск записи можно осуществить по
+    статусу, типу, категории, подкатегории. Также доступны фильтры по
+    дате добавления, статусу, типу, категории, подкатегории.
+    """
+
     fields = (
         'created_at', 'status', 'type', 'category',
         'subcategory', 'amount', 'comment',
@@ -38,15 +48,25 @@ class RecordAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
+    """Управление категориями. Доступен поиск по наименованию категории и типу,
+    к которому категория привязана."""
+
     search_fields = ('type__name', 'name')
 
 
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
+    """Управление подкатегориями. Доступен поиск по наименованию подкатегории,
+    по категории, к которой привязана подкатегория, и типу,
+    к которому привязана категория.
+    """
+
     search_fields = ('category__name', 'category__type__name', 'name')
 
 
 class StatusTypeAdmin(admin.ModelAdmin):
+    """Управление статусами и типами. Доступен поиск по наименованию."""
+
     search_fields = ('name',)
 
 

@@ -1,0 +1,25 @@
+volumes:
+  db_volume:
+  static:
+
+services:
+  db:
+    image: postgres:14
+    env_file: .env
+    volumes:
+      - db_volume:/var/lib/postgresql/data/
+  backend:
+    image: fantalovsergey/money_move_backend
+    env_file: .env
+    volumes:
+      - static:/static/
+    depends_on:
+      - db
+  nginx:
+    image: fantalovsergey/money_move_nginx
+    ports:
+      - 8080:80
+    volumes:
+      - static:/usr/share/nginx/html/
+    depends_on:
+      - backend

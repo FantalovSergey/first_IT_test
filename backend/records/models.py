@@ -4,6 +4,10 @@ from django.utils.timezone import now
 
 
 class Directory(models.Model):
+    """Абстрактная модель, от которой наследуются справочники:
+    статусы, типы, категории, подкатегории.
+    """
+
     name = models.CharField(
         verbose_name='Наименование', max_length=32, unique=True,
     )
@@ -17,6 +21,7 @@ class Directory(models.Model):
 
 
 class Status(Directory):
+    """Модель статуса."""
 
     class Meta(Directory.Meta):
         verbose_name = 'статус'
@@ -24,6 +29,7 @@ class Status(Directory):
 
 
 class Type(Directory):
+    """Модель типа."""
 
     class Meta(Directory.Meta):
         verbose_name = 'тип'
@@ -31,6 +37,8 @@ class Type(Directory):
 
 
 class Category(Directory):
+    """Модель категории. Категория привязана к одному существующему типу."""
+
     type = models.ForeignKey(
         Type, on_delete=models.CASCADE, verbose_name='Тип',
     )
@@ -41,6 +49,10 @@ class Category(Directory):
 
 
 class Subcategory(Directory):
+    """Модель подкатегории.
+    Подкатегория привязана к одной существующей категории.
+    """
+
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, verbose_name='Категория',
     )
@@ -51,6 +63,8 @@ class Subcategory(Directory):
 
 
 class Record(models.Model):
+    """Модель записи о движении денежных средств."""
+
     created_at = models.DateField(
         verbose_name='Дата создания записи', blank=True, default=now,
     )

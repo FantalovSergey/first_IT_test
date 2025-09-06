@@ -9,6 +9,9 @@ CSV_DIR = settings.BASE_DIR / 'directory'
 
 
 class Command(BaseCommand):
+    """Команда для добавления статусов, типов, категорий и подкатегорий
+    из csv-файлов в базу данных. Каждый csv-файл должен иметь заголовок.
+    """
 
     def handle(self, *args, **kwargs):
         self.load_statuses_and_types(
@@ -20,7 +23,10 @@ class Command(BaseCommand):
         self.load_categories('categories.csv')
         self.load_subcategories('subcategories.csv')
 
-    def load_statuses_and_types(self, filenames__models_classes):
+    def load_statuses_and_types(
+        self, filenames__models_classes: tuple[tuple[str, type]]
+    ):
+        """Добавление статусов и типов."""
         for filename, model_class in filenames__models_classes:
             with open(
                 file=CSV_DIR / filename, mode='r', encoding='utf-8',
@@ -38,7 +44,8 @@ class Command(BaseCommand):
                 objects_to_insert, ignore_conflicts=True,
             )
 
-    def load_categories(self, filename):
+    def load_categories(self, filename: str):
+        """Добавление категорий."""
         with open(
             file=CSV_DIR / filename, mode='r', encoding='utf-8',
         ) as opened_file:
@@ -65,7 +72,8 @@ class Command(BaseCommand):
             categories_to_insert, ignore_conflicts=True,
         )
 
-    def load_subcategories(self, filename):
+    def load_subcategories(self, filename: str):
+        """Добавление подкатегорий."""
         with open(
             file=CSV_DIR / filename, mode='r', encoding='utf-8',
         ) as opened_file:
